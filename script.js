@@ -40,25 +40,42 @@ document.addEventListener("DOMContentLoaded", function () {
 // ========================
 document.addEventListener("DOMContentLoaded", () => {
     const counters = document.querySelectorAll(".counter");
+    const statsSection = document.querySelector(".stats-section"); // Update with the actual class or ID of your stats section
+    let started = false; // Flag to prevent multiple triggers
 
-    counters.forEach(counter => {
-        const target = +counter.getAttribute("data-target");
-        let count = 0;
-        const increment = target / 100;
+    const startCounting = () => {
+        if (started) return; // Prevent multiple triggers
+        started = true;
 
-        const updateCounter = () => {
-            if (count < target) {
-                count += increment;
-                counter.innerText = Math.ceil(count);
-                setTimeout(updateCounter, 20);
-            } else {
-                counter.innerText = target;
-            }
-        };
+        counters.forEach(counter => {
+            const target = +counter.getAttribute("data-target");
+            let count = 0;
+            const increment = target / 100;
 
-        updateCounter();
-    });
+            const updateCounter = () => {
+                if (count < target) {
+                    count += increment;
+                    counter.innerText = Math.ceil(count);
+                    setTimeout(updateCounter, 20);
+                } else {
+                    counter.innerText = target;
+                }
+            };
+
+            updateCounter();
+        });
+    };
+
+    // Intersection Observer to detect when the section is visible
+    const observer = new IntersectionObserver(entries => {
+        if (entries[0].isIntersecting) {
+            startCounting();
+        }
+    }, { threshold: 0.5 }); // Trigger when 50% of the section is visible
+
+    observer.observe(statsSection);
 });
+
 
 // ========================
 //         NEAREST TRIP PAGE
